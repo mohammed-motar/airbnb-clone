@@ -1,26 +1,126 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-brand-50: #fff1f4;
+  --color-brand-100: #ffe0e8;
+  --color-brand-200: #ffc2d2;
+  --color-brand-300: #ff97b1;
+  --color-brand-400: #ff5d86;
+  --color-brand-500: #ff385c;
+  --color-brand-600: #e61e4d;
+  --color-brand-700: #c41840;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-ink-50: #f8fafc;
+  --color-ink-100: #f1f5f9;
+  --color-ink-200: #e2e8f0;
+  --color-ink-300: #cbd5e1;
+  --color-ink-400: #94a3b8;
+  --color-ink-500: #64748b;
+  --color-ink-600: #475569;
+  --color-ink-700: #334155;
+  --color-ink-800: #1e293b;
+  --color-ink-900: #0f172a;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink-50);
+  color: var(--color-ink-900);
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a,
+button,
+summary,
+input[type='button'],
+input[type='submit'],
+input[type='reset'],
+[role='button'] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hero-daypicker .rdp-months {
+  justify-content: center;
+}
+
+.hero-daypicker .rdp-day_disabled {
+  color: var(--color-ink-300);
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+
+.hero-daypicker .rdp-day:focus-visible {
+  outline: 2px solid var(--color-brand-400);
+  outline-offset: 2px;
+}
+
+.compact-uploadthing {
+  min-height: 150px !important;
+}
+
+.compact-uploadthing > div {
+  min-height: 150px !important;
+  height: 150px !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.compact-uploadthing [data-ut-element='dropzone'] {
+  min-height: 150px !important;
+  height: 150px !important;
+  justify-content: center !important;
+  gap: 0.35rem !important;
+}
+
+.compact-uploadthing svg {
+  width: 42px !important;
+  height: 42px !important;
+}
+
+.compact-uploadthing button {
+  margin-top: 0.2rem !important;
+}
+
+@keyframes hostListingCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.host-listing-card {
+  opacity: 0;
+  animation: hostListingCardIn 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .host-listing-card {
+    animation: none;
+    opacity: 1;
+  }
 }
