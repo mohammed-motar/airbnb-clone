@@ -10,7 +10,7 @@ function RegisterPage() {
         {/* Left column */}
         <div className='bg-gradient-to-br from-brand-100 via-brand-50 to-white p-8 md:p-10'>
           <p className='text-xs font-semibold uppercase tracking-[0.16em] text-brand-600'>
-            Join Kaabi-Travel
+            Join Kaabi Travel
           </p>
           <h1 className='mt-3 text-3xl font-bold tracking-tight text-ink-900'>
             Create your account and start booking with confidence
@@ -41,7 +41,7 @@ function RegisterPage() {
             Create account
           </h2>
           <p className='mt-1 text-sm text-ink-600'>
-            Join Kaabi-Travel to host homes or reserve stays.
+            Join Kaabi Travel to host homes or reserve stays.
           </p>
           <RegisterForm action={registerUser} />
 
