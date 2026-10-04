@@ -1,3 +1,4 @@
+import { ListingHeaderInfo } from '@/components/listing/listing-header-info';
 import { ListingImageGallery } from '@/components/listing/listing-image-gallery';
 import { getCurrentUser } from '@/lib/auth';
 import { fetchDemoProperties } from '@/lib/demo-properties';
@@ -74,6 +75,29 @@ export default async function ListingPage({
         hostName: demoListing!.hostName,
       };
 
+  const [reservationCount, recentReservations, userActiveReservation] =
+    await Promise.all([
+      prisma.reservation.count({
+        where: { listingId },
+      }),
+      prisma.reservation.findMany({
+        where: { listingId },
+        orderBy: { createdAt: 'desc' },
+        take: 6,
+      }),
+      user
+        ? prisma.reservation.findFirst({
+            where: {
+              listingId,
+              userId: user.id,
+              endDate: { gte: new Date() },
+            },
+            orderBy: { startDate: 'asc' },
+            select: { startDate: true, endDate: true },
+          })
+        : Promise.resolve(null),
+    ]);
+
   return (
     <main className='mx-auto min-h-screen max-w-7xl px-4 pb-28 pt-5 md:px-8 md:pb-10 md:pt-8'>
       <article className='space-y-6 md:space-y-8'>
@@ -88,9 +112,21 @@ export default async function ListingPage({
                 }
                 altBase={listing.title}
               />
-              <p>ListingImageGallery</p>
-              {/* <ListingHeaderInfo /> */}
-              <p>ListingHeaderInfo</p>
+              <ListingHeaderInfo
+                category={listing.category}
+                title={listing.title}
+                locationValue={listing.locationValue}
+                hostRating={hostRating}
+                hostName={listing.hostName}
+                pricePerNight={listing.pricePerNight}
+                listingStatusLabel={
+                  isDemoListing
+                    ? 'Featured demo listing'
+                    : reservationCount > 0
+                      ? `${reservationCount} confirmed booking${reservationCount > 1 ? 's' : ''}`
+                      : 'Newly listed'
+                }
+              />
             </section>
             {/* <ListingAbout /> */}
             <p>ListingAbout</p>
