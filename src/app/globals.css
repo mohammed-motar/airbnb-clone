@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+/* This is important for calendar style */
+@import 'react-day-picker/dist/style.css';
 
 @theme {
   --color-brand-50: #fff1f4;
