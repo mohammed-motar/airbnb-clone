@@ -1,4 +1,5 @@
 import { ListingAbout } from '@/components/listing/listing-about';
+import { ListingBookedRanges } from '@/components/listing/listing-booked-ranges';
 import { ListingHeaderInfo } from '@/components/listing/listing-header-info';
 import { ListingImageGallery } from '@/components/listing/listing-image-gallery';
 import { getCurrentUser } from '@/lib/auth';
@@ -99,6 +100,11 @@ export default async function ListingPage({
         : Promise.resolve(null),
     ]);
 
+  const bookedRanges = recentReservations.map((reservation) => ({
+    startDate: reservation.startDate,
+    endDate: reservation.endDate,
+  }));
+
   return (
     <main className='mx-auto min-h-screen max-w-7xl px-4 pb-28 pt-5 md:px-8 md:pb-10 md:pt-8'>
       <article className='space-y-6 md:space-y-8'>
@@ -137,11 +143,8 @@ export default async function ListingPage({
               hostName={listing.hostName}
               hostRating={hostRating}
             />
-            <p>ListingAbout</p>
-            {/* <ListingBookedRanges /> */}
-            <p>ListingBookedRanges</p>
+            <ListingBookedRanges bookedRanges={bookedRanges} />
             {/* <ListingMap /> */}
-            <p>ListingMap</p>
           </div>
 
           <div className='order-1 lg:order-2'>
