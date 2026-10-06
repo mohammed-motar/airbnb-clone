@@ -2,6 +2,7 @@ import { ListingAbout } from '@/components/listing/listing-about';
 import { ListingBookedRanges } from '@/components/listing/listing-booked-ranges';
 import { ListingHeaderInfo } from '@/components/listing/listing-header-info';
 import { ListingImageGallery } from '@/components/listing/listing-image-gallery';
+import { ListingMap } from '@/components/listing/listing-map';
 import { getCurrentUser } from '@/lib/auth';
 import { fetchDemoProperties } from '@/lib/demo-properties';
 import { prisma } from '@/lib/prisma';
@@ -144,7 +145,7 @@ export default async function ListingPage({
               hostRating={hostRating}
             />
             <ListingBookedRanges bookedRanges={bookedRanges} />
-            {/* <ListingMap /> */}
+            <ListingMap locationValue={listing.locationValue} />
           </div>
 
           <div className='order-1 lg:order-2'>
