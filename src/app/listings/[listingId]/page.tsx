@@ -1,5 +1,6 @@
 import { ListingAbout } from '@/components/listing/listing-about';
 import { ListingBookedRanges } from '@/components/listing/listing-booked-ranges';
+import { ListingBookingSidebar } from '@/components/listing/listing-booking-sidebar';
 import { ListingHeaderInfo } from '@/components/listing/listing-header-info';
 import { ListingImageGallery } from '@/components/listing/listing-image-gallery';
 import { ListingMap } from '@/components/listing/listing-map';
@@ -106,6 +107,17 @@ export default async function ListingPage({
     endDate: reservation.endDate,
   }));
 
+  const bookingStatus =
+    query.booking === 'success' || query.booking === 'error'
+      ? query.booking
+      : null;
+  const bookingMessage = query.message ?? null;
+  const initialCheckIn = query.checkIn;
+  const initialCheckOut = query.checkOut;
+  const initialAdults = query.adults;
+  const initialChildren = query.children;
+  const initialInfants = query.infants;
+
   return (
     <main className='mx-auto min-h-screen max-w-7xl px-4 pb-28 pt-5 md:px-8 md:pb-10 md:pt-8'>
       <article className='space-y-6 md:space-y-8'>
@@ -149,8 +161,23 @@ export default async function ListingPage({
           </div>
 
           <div className='order-1 lg:order-2'>
-            {/* <ListingBookingSidebar /> */}
-            ListingBookingSidebar
+            <ListingBookingSidebar
+              listingId={listing.id}
+              pricePerNight={listing.pricePerNight}
+              hostName={listing.hostName}
+              reservationCount={reservationCount}
+              userActiveReservation={userActiveReservation}
+              maxGuests={listing.guestCount}
+              isLoggedIn={Boolean(user)}
+              bookingStatus={bookingStatus}
+              bookingMessage={bookingMessage}
+              unavailableRanges={bookedRanges}
+              initialCheckIn={initialCheckIn}
+              initialCheckOut={initialCheckOut}
+              initialAdults={initialAdults}
+              initialChildren={initialChildren}
+              initialInfants={initialInfants}
+            />
           </div>
         </div>
       </article>

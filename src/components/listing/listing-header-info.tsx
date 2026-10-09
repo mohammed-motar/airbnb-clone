@@ -51,7 +51,7 @@ export function ListingHeaderInfo({
               / night
             </span>
           </p>
-          <p className='mt-1 text-xs text-ink-500'>Hosted by ${hostName}</p>
+          <p className='mt-1 text-xs text-ink-500'>Hosted by {hostName}</p>
         </div>
       </div>
     </div>
