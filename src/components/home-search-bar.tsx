@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { Search } from 'lucide-react';
 import { type DateRange } from 'react-day-picker';
 import { MAX_INFANTS } from '@/lib/booking-rules';
-import { toValidate } from '@/lib/daa-utils';
+import { toValidate } from '@/lib/data-utils';
 import { DateRangePicker } from '@/components/date-range-picker';
 
 type HomeSearchBarProps = {
