@@ -148,7 +148,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const buildListingHref = (listingId: string) =>
     `/listings/${listingId}${listingQuery ? `?${listingQuery}` : ''}`;
 
-  const hasAnyFilter = Boolean(params.category?.trim());
+  const hasAnyFilter = Boolean(
+    params.location?.trim() ||
+    params.category?.trim() ||
+    params.checkIn?.trim() ||
+    params.checkOut?.trim() ||
+    params.guests?.trim() ||
+    params.adults?.trim() ||
+    params.children?.trim() ||
+    params.infants?.trim(),
+  );
   const hasLocationSearch = Boolean(params.location?.trim());
 
   const demoProperties = await fetchDemoProperties();
@@ -173,7 +182,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     Number(params.adults ?? 0) +
       Number(params.children ?? 0) +
       Number(params.infants ?? 0) ||
-    Number(params.guests) ||
+    Number(params.guests || 1) ||
     1;
 
   const unifiedCards = allCards.filter((card) => {
@@ -208,7 +217,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       : `${requestedGuests} guest${requestedGuests > 1 ? 's' : ''}`;
 
   const limitedCards = unifiedCards.slice(0, 20);
-  const groupedCards = groupByCity(limitedCards);
+  const groupedCards = groupByCity(limitedCards).slice(0, 8);
   const defaultGridCards = limitedCards;
 
   return (

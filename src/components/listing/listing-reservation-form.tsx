@@ -12,6 +12,7 @@ import {
   PROCESSING_FEE_RATE,
 } from '@/lib/booking-rules';
 import { toValidate } from '@/lib/data-utils';
+import { createReservation } from '@/app/actions';
 
 type ListingReservationFormProps = {
   listingId: string;
@@ -182,6 +183,7 @@ export function ListingReservationForm({
 
   return (
     <form
+      action={createReservation}
       id={formAnchorId}
       className='space-y-4 rounded-2xl border border-ink-200 bg-surface p-5'
     >
@@ -404,7 +406,7 @@ function SubmitButton() {
 
   return (
     <button
-      type='button'
+      type='submit'
       disabled={pending}
       className='w-full rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-70'
     >
