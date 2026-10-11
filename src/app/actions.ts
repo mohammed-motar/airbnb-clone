@@ -39,6 +39,18 @@ const reservationSchema = z.object({
   children: z.coerce.number().int().min(0),
   infants: z.coerce.number().int().min(0).max(MAX_INFANTS),
 });
+const listingSchema = z.object({
+  title: z.string().min(5),
+  description: z.string().min(10),
+  imageSrc: z.string().url(),
+  imageGallery: z.array(z.string().url()).min(1).max(10),
+  category: z.string().min(2),
+  roomCount: z.coerce.number().int().min(1),
+  bathroomCount: z.coerce.number().int().min(1),
+  guestCount: z.coerce.number().int().min(1),
+  locationValue: z.string().min(2),
+  pricePerNight: z.coerce.number().int().min(10),
+});
 
 /**
  * Helpers
@@ -201,4 +213,60 @@ export async function cancelReservation(formData: FormData) {
   revalidatePath(`/listings/${reservation.listingId}`);
   revalidatePath('/host');
   redirect('/bookings?message=Reservation cancelled successfully.');
+}
+
+function parseListingGallery(rawGallery: FormDataEntryValue | null) {
+  try {
+    const value = JSON.parse(String(rawGallery ?? '[]'));
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function createListing(formData: FormData) {
+  const user = await requireUser();
+  const parsedGallery = parseListingGallery(formData.get('imageGallery'));
+  const parsed = listingSchema.safeParse({
+    title: formData.get('title'),
+    description: formData.get('description'),
+    imageSrc: formData.get('imageSrc'),
+    imageGallery: parsedGallery,
+    category: formData.get('category'),
+    roomCount: formData.get('roomCount'),
+    bathroomCount: formData.get('bathroomCount'),
+    guestCount: formData.get('guestCount'),
+    locationValue: formData.get('locationValue'),
+    pricePerNight: formData.get('pricePerNight'),
+  });
+  if (!parsed.success) {
+    const issues = parsed.error.issues
+      .map(({ path, message }) => `${path.join('.')}: ${message}`)
+      .join('; ');
+    throw new Error(`Invalid listing payload: ${issues}`);
+  }
+  await prisma.listing.create({
+    data: {
+      ...parsed.data,
+      userId: user.id,
+    },
+  });
+  revalidatePath('/');
+  revalidatePath('/host');
+}
+
+export async function deleteListing(formData: FormData) {
+  const user = await requireUser();
+  const listingId = String(formData.get('listingId') ?? '');
+  if (!listingId) throw new Error('Listing id is missing');
+
+  await prisma.listing.deleteMany({
+    where: {
+      id: listingId,
+      userId: user.id,
+    },
+  });
+
+  revalidatePath('/');
+  revalidatePath('/host');
 }

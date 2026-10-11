@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { ImageUp } from 'lucide-react';
 import { SafeImage } from '@/components/safe-image';
+import { useUploadThing } from '@/lib/uploadthing';
 
 type ListingFormProps = {
   action: (formData: FormData) => Promise<void>;
@@ -28,7 +29,7 @@ export function ListingForm({
   submittingLabel = 'Publishing...',
   initialValues,
 }: ListingFormProps) {
-  const [galleryImages, setGalleryImages] = useState<String[]>(
+  const [galleryImages, setGalleryImages] = useState<string[]>(
     initialValues
       ? Array.from(
           new Set(
@@ -44,18 +45,62 @@ export function ListingForm({
   const [uploadError, setUploadError] = useState('');
   const [isDragActive, setIsDragActive] = useState(false);
 
+  const { startUpload, isUploading } = useUploadThing('imageUploader', {
+    onClientUploadComplete: (res) => {
+      const urls = (res ?? [])
+        .map((item) => item?.ufsUrl || item?.url || '')
+        .filter(Boolean);
+
+      setGalleryImages((prev) =>
+        Array.from(new Set([...prev, ...urls])).slice(0, 10),
+      );
+
+      setUploadError('');
+    },
+    onUploadError: (error) => {
+      setUploadError(error.message);
+    },
+  });
+
+  async function handleFileUpload(files: FileList | File[] | null) {
+    const list = files ? Array.from(files) : [];
+    if (list.length === 0) return;
+    if (galleryImages.length + list.length > 10) {
+      setUploadError('You can upload up to 10 images per listing.');
+      return;
+    }
+    if (list.some((file) => !file.type.startsWith('image/'))) {
+      setUploadError('Please upload an image file');
+      return;
+    }
+    if (list.some((file) => file.size > 4 * 1024 * 1024)) {
+      setUploadError('Image must be 4MB or smaller');
+      return;
+    }
+
+    // If no errors
+    setUploadError('');
+    await startUpload(list.slice(0, 10 - galleryImages.length));
+  }
+
+  function removeImage(imageUrl: string) {
+    setGalleryImages((prev) => prev.filter((image) => image !== imageUrl));
+  }
+
   return (
-    <form className='mt-4 grid gap-3 md:grid-cols-2'>
+    <form className='mt-4 grid gap-3 md:grid-cols-2' action={action}>
       <FieldInput
         name='title'
         label='Title'
         placeholder='Stylish loft near downtown'
+        minLength={5}
         defaultValue={initialValues?.title}
       />
       <FieldInput
         name='category'
         label='Category'
         placeholder='Apartment, villa, cabin...'
+        minLength={2}
         defaultValue={initialValues?.category}
       />
 
@@ -76,7 +121,7 @@ export function ListingForm({
           onDrop={(event) => {
             event.preventDefault();
             setIsDragActive(false);
-            // void
+            void handleFileUpload(event.dataTransfer.files);
           }}
         >
           <input
@@ -85,7 +130,7 @@ export function ListingForm({
             multiple
             className='hidden'
             onChange={(event) => {
-              // void
+              void handleFileUpload(event.target.files);
               event.currentTarget.value = '';
             }}
           />
@@ -94,8 +139,7 @@ export function ListingForm({
             Drag and drop images, or click to upload
           </p>
           <p className='text-xs text-ink-500'>
-            Up to 10 images, each max 4MB
-            {/* {isUploading ? 'Uploading...' : ''} */}
+            Up to 10 images, each max 4MB {isUploading ? 'Uploading...' : ''}
           </p>
         </label>
 
@@ -107,13 +151,50 @@ export function ListingForm({
           hidden
         />
         <input
-          name='imageSrc'
+          name='imageGallery'
           value={JSON.stringify(galleryImages)}
           readOnly
           hidden
         />
 
-        {/* Drop zone images here */}
+        {galleryImages.length > 0 ? (
+          <div className='mt-3 space-y-2'>
+            <p className='text-sm text-emerald-700'>
+              {galleryImages.length} image{galleryImages.length > 1 ? 's' : ''}{' '}
+              ready.
+            </p>
+            <div className='hide-scrollbar flex gap-2 overflow-x-auto pb-1'>
+              {galleryImages.map((image, index) => (
+                <div key={`${image}-${index}`} className='relative'>
+                  <SafeImage
+                    src={image}
+                    alt={`Uploaded listing image ${index + 1}`}
+                    width={240}
+                    height={160}
+                    className='h-16 w-24 rounded-lg border border-ink-200 object-cover'
+                  />
+                  <button
+                    type='button'
+                    className='absolute -right-1.5 -top-1.5 rounded-full border border-ink-200 bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink-700 hover:bg-ink-100'
+                    aria-label={`Remove image ${index + 1}`}
+                    onClick={() => removeImage(image)}
+                  >
+                    x
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className='mt-2 text-sm text-ink-600'>
+            Upload at least one image. The first image is used as the cover
+            photo.
+          </p>
+        )}
+
+        {uploadError && (
+          <p className='mt-2 text-sm text-red-600'>{uploadError}</p>
+        )}
       </div>
 
       <FieldTextarea
@@ -121,12 +202,14 @@ export function ListingForm({
         label='Description'
         placeholder='Describe what guests can expect from this stay.'
         className='md:col-span-2'
+        minLength={10}
         defaultValue={initialValues?.description}
       />
       <FieldInput
         name='locationValue'
         label='Location'
         placeholder='e.g. Miami, United States'
+        minLength={2}
         defaultValue={initialValues?.locationValue}
       />
       <FieldInput
@@ -175,6 +258,7 @@ type FieldInputProps = {
   placeholder: string;
   type?: string;
   min?: number;
+  minLength?: number;
   defaultValue?: string | number;
 };
 const FieldInput = ({
@@ -183,6 +267,7 @@ const FieldInput = ({
   placeholder,
   type,
   min,
+  minLength,
   defaultValue,
 }: FieldInputProps) => {
   return (
@@ -193,6 +278,7 @@ const FieldInput = ({
         required
         type={type}
         min={min}
+        minLength={minLength}
         placeholder={placeholder}
         defaultValue={defaultValue}
         className='rounded-xl border border-ink-300 px-3 py-2 text-sm text-ink-900 outline-none transition placeholder:text-ink-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100'
@@ -206,6 +292,7 @@ type FieldTextareaProps = {
   label: string;
   placeholder: string;
   className?: string;
+  minLength?: number;
   defaultValue?: string;
 };
 function FieldTextarea({
@@ -213,6 +300,7 @@ function FieldTextarea({
   label,
   placeholder,
   className,
+  minLength,
   defaultValue,
 }: FieldTextareaProps) {
   return (
@@ -221,6 +309,7 @@ function FieldTextarea({
       <textarea
         name={name}
         required
+        minLength={minLength}
         placeholder={placeholder}
         defaultValue={defaultValue}
         rows={4}

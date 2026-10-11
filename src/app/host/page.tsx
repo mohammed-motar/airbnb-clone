@@ -8,6 +8,8 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { uiShell } from '@/lib/ui-classes';
 import { HostSection } from '@/components/host/host-section';
 import { ListingForm } from '@/components/listing-form';
+import { createListing } from '../actions';
+import { HostListingItem } from '@/components/host/host-listing-item';
 
 export default async function HostDashBoardPage() {
   const user = await requireUser();
@@ -61,7 +63,7 @@ export default async function HostDashBoardPage() {
           title='Create a listing'
           description='Add a professionally presented listing with photos, pricing, and guest details.'
         >
-          <ListingForm />
+          <ListingForm action={createListing} />
         </HostSection>
 
         <HostSection
@@ -83,7 +85,13 @@ export default async function HostDashBoardPage() {
                 description='Fill in the form to publish your first property.'
               />
             ) : (
-              listings.map((listing, index) => <p>Host listing item</p>)
+              listings.map((listing, index) => (
+                <HostListingItem
+                  key={listing.id}
+                  listing={listing}
+                  index={index}
+                />
+              ))
             )}
           </div>
         </HostSection>
