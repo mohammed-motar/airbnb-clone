@@ -56,6 +56,7 @@ export default async function ListingPage({
         title: dbListing.title,
         description: dbListing.description,
         locationValue: dbListing.locationValue,
+        imageSrc: dbListing.imageSrc,
         imageGallery: dbListing.imageGallery,
         pricePerNight: dbListing.pricePerNight,
         category: dbListing.category,
@@ -71,7 +72,7 @@ export default async function ListingPage({
         locationValue: demoListing!.city,
         imageSrc: demoListing!.image,
         imageGallery: [demoListing!.image],
-        pricePerNight: [demoListing!.pricePerNight],
+        pricePerNight: demoListing!.pricePerNight,
         category: 'Demo Stay',
         guestCount: demoListing!.maxGuests,
         roomCount: Math.max(1, Math.round(demoListing!.maxGuests / 2)),
@@ -138,7 +139,7 @@ export default async function ListingPage({
                 locationValue={listing.locationValue}
                 hostRating={hostRating}
                 hostName={listing.hostName}
-                pricePerNight={listing.pricePerNight}
+                pricePerNight={`${listing.pricePerNight}`}
                 listingStatusLabel={
                   isDemoListing
                     ? 'Featured demo listing'
