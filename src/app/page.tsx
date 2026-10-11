@@ -397,7 +397,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <div className='grid gap-8 md:grid-cols-4'>
           <div className='md:col-span-2'>
             <h3 className='text-2xl font-semibold text-ink-900'>
-              Kaabi Travel
+              Airbnb Clone
             </h3>
             <p className='mt-3 max-w-xl text-sm text-ink-600'>
               Discover carefully curated US stays with a booking flow designed
@@ -430,7 +430,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </div>
         </div>
         <div className='mt-8 border-t border-ink-200 pt-4 text-xs text-ink-500'>
-          &copy; {new Date().getFullYear()} Kaabi Travel. All rights reserved.
+          &copy; {new Date().getFullYear()} Airbnb Clone. All rights reserved.
         </div>
       </footer>
     </main>

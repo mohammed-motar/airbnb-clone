@@ -21,7 +21,7 @@ export default async function Navbar() {
           className='flex items-center gap-2 text-lg font-bold tracking-tight text-brand-600'
         >
           <House className='h-5 w-5' />
-          <span>Kaabi Travel</span>
+          <span>Airbnb Clone</span>
         </Link>
 
         <div className='flex items-center gap-2'>

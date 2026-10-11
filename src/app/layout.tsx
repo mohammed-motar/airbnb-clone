@@ -4,7 +4,7 @@ import './globals.css';
 import Navbar from '@/components/navbar';
 
 export const metadata: Metadata = {
-  title: 'Kaabi-Travel',
+  title: 'Airbnb Clone',
   description: 'Book a stay with a modern, professional booking experience',
 };
 
