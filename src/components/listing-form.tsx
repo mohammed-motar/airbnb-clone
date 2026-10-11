@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { ImageUp } from 'lucide-react';
 import { SafeImage } from '@/components/safe-image';
+import { useUploadThing } from '@/lib/uploadthing';
 
 type ListingFormProps = {
   action: (formData: FormData) => Promise<void>;
@@ -44,6 +45,44 @@ export function ListingForm({
   const [uploadError, setUploadError] = useState('');
   const [isDragActive, setIsDragActive] = useState(false);
 
+  const { startUpload, isUploading } = useUploadThing('imageUploader', {
+    onClientUploadComplete: (res) => {
+      const urls = (res ?? [])
+        .map((item) => item?.ufsUrl || item?.url || '')
+        .filter(Boolean);
+
+      setGalleryImages((prev: any) =>
+        Array.from(new Set([...prev, ...urls])).slice(0, 10),
+      );
+
+      setUploadError('');
+    },
+    onUploadError: (error) => {
+      setUploadError(error.message);
+    },
+  });
+
+  async function handleFileUpload(files: FileList | File[] | null) {
+    const list = files ? Array.from(files) : [];
+    if (list.length === 0) return;
+    if (galleryImages.length + list.length > 10) {
+      setUploadError('You can upload up to 10 images per listing.');
+      return;
+    }
+    if (list.some((file) => !file.type.startsWith('image/'))) {
+      setUploadError('Please upload an image file');
+      return;
+    }
+    if (list.some((file) => file.size > 4 * 1024 * 1024)) {
+      setUploadError('Image must be 4MB or smaller');
+      return;
+    }
+
+    // If no errors
+    setUploadError('');
+    await startUpload(list.slice(0, 10 - galleryImages.length));
+  }
+
   return (
     <form className='mt-4 grid gap-3 md:grid-cols-2'>
       <FieldInput
@@ -76,7 +115,7 @@ export function ListingForm({
           onDrop={(event) => {
             event.preventDefault();
             setIsDragActive(false);
-            // void
+            void handleFileUpload(event.dataTransfer.files);
           }}
         >
           <input
@@ -85,7 +124,7 @@ export function ListingForm({
             multiple
             className='hidden'
             onChange={(event) => {
-              // void
+              void handleFileUpload(event.target.files);
               event.currentTarget.value = '';
             }}
           />
@@ -94,8 +133,7 @@ export function ListingForm({
             Drag and drop images, or click to upload
           </p>
           <p className='text-xs text-ink-500'>
-            Up to 10 images, each max 4MB
-            {/* {isUploading ? 'Uploading...' : ''} */}
+            Up to 10 images, each max 4MB {isUploading ? 'Uploading...' : ''}
           </p>
         </label>
 
