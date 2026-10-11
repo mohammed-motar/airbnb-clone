@@ -7,6 +7,7 @@ import { StatCard } from '@/components/ui/stat-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { uiShell } from '@/lib/ui-classes';
 import { HostSection } from '@/components/host/host-section';
+import { ListingForm } from '@/components/listing-form';
 
 export default async function HostDashBoardPage() {
   const user = await requireUser();
@@ -59,7 +60,9 @@ export default async function HostDashBoardPage() {
         <HostSection
           title='Create a listing'
           description='Add a professionally presented listing with photos, pricing, and guest details.'
-        ></HostSection>
+        >
+          <ListingForm />
+        </HostSection>
 
         <HostSection
           title='Your listings'
@@ -80,7 +83,7 @@ export default async function HostDashBoardPage() {
                 description='Fill in the form to publish your first property.'
               />
             ) : (
-              listings.map((listing, index) => <p>Hotlistingitem</p>)
+              listings.map((listing, index) => <p>Host listing item</p>)
             )}
           </div>
         </HostSection>
