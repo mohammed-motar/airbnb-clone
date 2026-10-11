@@ -87,8 +87,21 @@ export function ListingForm({
     setGalleryImages((prev) => prev.filter((image) => image !== imageUrl));
   }
 
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    if (galleryImages.length === 0) {
+      event.preventDefault();
+      setUploadError(
+        'Upload at least one image. The first image is used as the cover photo.',
+      );
+    }
+  }
+
   return (
-    <form className='mt-4 grid gap-3 md:grid-cols-2' action={action}>
+    <form
+      className='mt-4 grid gap-3 md:grid-cols-2'
+      action={action}
+      onSubmit={handleSubmit}
+    >
       <FieldInput
         name='title'
         label='Title'
@@ -145,16 +158,16 @@ export function ListingForm({
 
         <input
           name='imageSrc'
-          value={galleryImages[0] ?? ''}
-          readOnly
+          key={`imageSrc-${galleryImages[0] ?? 'none'}`}
           required
-          hidden
+          type='hidden'
+          defaultValue={galleryImages[0] ?? ''}
         />
         <input
           name='imageGallery'
-          value={JSON.stringify(galleryImages)}
-          readOnly
-          hidden
+          defaultValue={JSON.stringify(galleryImages)}
+          key={`imageGallery-${JSON.stringify(galleryImages)}`}
+          type='hidden'
         />
 
         {galleryImages.length > 0 ? (
