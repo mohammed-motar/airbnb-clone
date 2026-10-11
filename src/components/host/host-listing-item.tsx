@@ -70,40 +70,37 @@ export function HostListingItem({ listing, index }: HostListingItemProps) {
             </span>
           </div>
         </Link>
-
         <p className='line-clamp-2 text-sm leading-relaxed text-ink-600 md:col-span-2'>
           {listing.description}
         </p>
+      </div>
 
-        <div className='flex items-end justify-between border-t border-ink-200 pt-3 md:col-span-2'>
-          <div className='flex items-center gap-2'>
-            <Link
-              href={`/host/listings/${listing.id}/edit`}
-              className='inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold text-ink-700 transition hover:bg-ink-100'
+      <div className='flex items-end justify-between border-t border-ink-200 pt-3 md:col-span-2'>
+        <div className='flex items-center gap-2'>
+          <Link
+            href={`/host/listings/${listing.id}/edit`}
+            className='inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold text-ink-700 transition hover:bg-ink-100'
+          >
+            <Pencil className='h-4 w-4' />
+            Edit
+          </Link>
+
+          <form action={deleteListing}>
+            <input type='hidden' name='listingId' value={listing.id} />
+            <button
+              type='submit'
+              className='inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold text-red-600 transition hover:bg-red-50'
             >
-              <Pencil className='h-4 w-4' />
-              Edit
-            </Link>
-
-            <form action={deleteListing}>
-              <input type='hidden' name='listingId' value={listing.id} />
-              <button
-                type='submit'
-                className='inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold text-red-600 transition hover:bg-red-50'
-              >
-                <Trash2 className='h-4 w-4' />
-                Delete
-              </button>
-            </form>
-          </div>
-
-          <p className='text-lg font-semibold text-ink-900'>
-            ${listing.pricePerNight}
-            <span className='ml-1 text-sm font-medium text-ink-600'>
-              / night
-            </span>
-          </p>
+              <Trash2 className='h-4 w-4' />
+              Delete
+            </button>
+          </form>
         </div>
+
+        <p className='text-lg font-semibold text-ink-900'>
+          ${listing.pricePerNight}
+          <span className='ml-1 text-sm font-medium text-ink-600'>/ night</span>
+        </p>
       </div>
     </article>
   );

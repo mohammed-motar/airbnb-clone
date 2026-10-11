@@ -58,7 +58,7 @@ export default async function HostDashBoardPage() {
         />
       </section>
 
-      <div className='mt-6 grid gap-6 xl:grid-cols-[1.1fr_1fr]'>
+      <div className='mt-6 grid gap-6 grid-cols-1 xl:grid-cols-[1.1fr_1fr]'>
         <HostSection
           title='Create a listing'
           description='Add a professionally presented listing with photos, pricing, and guest details.'
